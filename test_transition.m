@@ -4,19 +4,17 @@ clear all,close all, clc
 sA = State('A');
 sB = State('B');
 
-trAB = Transition('A', 'B', @OnEnter_A_B, @OnExit_A_B);
+trAB = Transition('A', 'B');
 trAB.onEnter();
 
 
-
-
 end
 
-function OnEnter_A_B()
+function A_B_OnEnter()
     disp('OnEnter_A_B')
 end
 
-function OnExit_A_B()
+function A_B_OnExit()
     disp('OnEnter_A_B')
 end
 
