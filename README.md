@@ -33,7 +33,7 @@ Motor and Oven is implemented as a StateMachine.
             });
           
 # ------------------------ Oven State Machine------------------ 
-'''
+
 classdef Oven < StateMachine
     
     properties (Constant)
@@ -101,7 +101,7 @@ classdef Oven < StateMachine
 end
 
 # ------------------------ Motor State Machine------------------ 
-'''
+
 classdef Motor < StateMachine
     
     properties (Constant)
@@ -186,8 +186,7 @@ classdef Motor < StateMachine
             fprintf('ST_ChangeSpeed(%d) executed. Speed: %d \n', data.speed);
             obj.speed = data.speed;
         end
-        
-        
-        
     end
 end
+
+
