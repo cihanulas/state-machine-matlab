@@ -4,13 +4,13 @@ State Machine Implementation with Matlab
 Motor and Oven is implemented as a StateMachine.
 
 
-StateMachine is a base class and responsible for state transition:
+# StateMachine is a base class and responsible for state transition:
  * Implements Internal and External events
  * Includes StateEngine
  
  
  
- States: States are defined and named. So the name is also ID of the state. 
+ # States: States are defined and named. So the name is also ID of the state. 
  ST_Ignored and ST_CannotHappen are static states defined in StateMahine so can be used for all instance of sub class (like Motor, or Oven)
  
  Here is the usage for an Oven state machine and its light implementation. 
@@ -23,8 +23,8 @@ StateMachine is a base class and responsible for state transition:
             'ST_Ignored', StateMachine.ST_Ignored, ...
             'ST_CannotHappen', StateMachine.ST_CannotHappen);
         
-TransitionMap stores the transition map for a particular event and optionally the states's entry and exit functions.
-
+# TransitionMap stores the transition map for a particular event and optionally the states's entry and exit functions.
+'''
         transitions_for_event_open_door = TransitionMap ({
             {'ST_DoorClose' 'ST_DoorOpen', 'TurnOnLight'}; % Turn light on just before openning door (OnEnter func.)
             });
@@ -32,7 +32,8 @@ TransitionMap stores the transition map for a particular event and optionally th
             {'ST_DoorOpen' 'ST_DoorClose', 'TurnOffLight'}; % Turn light off before closing door
             });
           
------------------------- Oven State Machine------------------ 
+# ------------------------ Oven State Machine------------------ 
+'''
 classdef Oven < StateMachine
     
     properties (Constant)
@@ -99,7 +100,8 @@ classdef Oven < StateMachine
     end
 end
 
------------------------- Motor State Machine------------------ 
+# ------------------------ Motor State Machine------------------ 
+'''
 classdef Motor < StateMachine
     
     properties (Constant)
