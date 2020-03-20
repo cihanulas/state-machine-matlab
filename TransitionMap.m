@@ -31,7 +31,7 @@ classdef TransitionMap < handle
             end
         end
         
-        function next_state = go_next(obj, main_obj)
+        function go_next(obj, main_obj, data)
             current_state = main_obj.CurrentState();
             next_state = obj.tr_map.(current_state);
             key = TransitionMap.create_key(current_state, next_state);
@@ -44,6 +44,10 @@ classdef TransitionMap < handle
                 onEnter = obj.enter_map.(key);
                 main_obj.(onEnter)();
             end
+            if (nargin==2)
+                data= [];
+            end
+            main_obj.ExternalEvent(next_state, data); % event data
         end
     end
     
