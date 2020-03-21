@@ -16,22 +16,29 @@ classdef StockStrategy < StateMachine
         transitions_for_event_in_portfoy = TransitionMap ({
             {'ST_Passive' 'ST_InPortfoy'};
             {'ST_OrderInProgress' 'ST_InPortfoy'};
+            {'ST_InPortfoy' 'ST_InPortfoy'};
+            % We expect ST_OrderInProgress between 
+            {'ST_NotInPortfoy' 'ST_InPortfoy', 'UnExpectedTransitionFromST_NotInPortfoyToST_InPortfoy'}; 
             });
         
         transitions_for_event_not_in_portfoy = TransitionMap ({
             {'ST_Passive' 'ST_NotInPortfoy'};
             {'ST_OrderInProgress' 'ST_NotInPortfoy'};
+            {'ST_NotInPortfoy' 'ST_NotInPortfoy'};
+            {'ST_InPortfoy' 'ST_NotInPortfoy', 'UnExpectedTransitionFromST_InPortfoyToST_NotInPortfoy'}; 
             });
         
         transitions_for_event_stop = TransitionMap ({
+            {'ST_Passive' 'ST_Ignored'}
             {'ST_NotInPortfoy' 'ST_Passive'};
             {'ST_InPortfoy' 'ST_Passive'};
+            {'ST_OrderInProgress' 'ST_Passive'};
             });
     end
     
     properties
         strategy
-        portfoy_data = PortfoyData([]);
+        portfoy = [];
         price
     end
     
@@ -72,6 +79,14 @@ classdef StockStrategy < StateMachine
             fprintf('   ==> Strategy in passive mode. All events are ignored.\n');
         end
         
+        function UnExpectedTransitionFromST_NotInPortfoyToST_InPortfoy (obj)
+            fprintf('   ==> UnExpected transition from ST_NotInPortfoy to ST_InPortfoy.\n');
+        end
+
+        function UnExpectedTransitionFromST_InPortfoyToST_NotInPortfoy (obj)
+            fprintf('   ==> UnExpected transition from ST_InPortfoy to ST_NotInPortfoy.\n');
+        end
+        
     end
     methods (Access = {?StateMachine})
         
@@ -86,10 +101,11 @@ classdef StockStrategy < StateMachine
                 obj.price = event_data.price;
                 is_buy_signal = obj.price.close <=obj.strategy.buy_price;
                 if (is_buy_signal)
+                    % send buy order
                     obj.InternalEvent('ST_OrderInProgress', event_data);
                 end
             elseif strcmp(event_data.type, 'PortfoyData')
-                obj.portfoy_data = event_data;
+                obj.portfoy = event_data.portfoy;
             end
             
         end
@@ -100,10 +116,11 @@ classdef StockStrategy < StateMachine
                 obj.price = event_data.price;
                 is_sell_signal = obj.price.close >=obj.strategy.take_profit_price;
                 if (is_sell_signal)
+                    % send sell order
                     obj.InternalEvent('ST_OrderInProgress', event_data);
                 end
             elseif strcmp(event_data.type, 'PortfoyData')
-                obj.portfoy_data = event_data;
+                obj.portfoy = event_data.portfoy;
             end
             
         end

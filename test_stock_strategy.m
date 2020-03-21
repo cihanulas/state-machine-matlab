@@ -37,9 +37,16 @@ stock_strategy.PriceUpdate(price_for_buy);
 expect_current_state('ST_OrderInProgress');
 
 % InPortfoy Event
+portfoy_data = PortfoyData(struct('buy_price', 1, 'close', 1.15, 'lot', 70));
+stock_strategy.InPortfoy(portfoy_data);
+expect_current_state('ST_InPortfoy');
+expect_lot(70);
+
 portfoy_data = PortfoyData(struct('buy_price', 1, 'close', 1.15, 'lot', 100));
 stock_strategy.InPortfoy(portfoy_data);
 expect_current_state('ST_InPortfoy');
+expect_lot(100);
+
 
 %% Stop Stategy -> Passive Mode.
 fprintf ('\nTest Stop Event');
@@ -59,8 +66,12 @@ stock_strategy.Stop();
 expect_current_state('ST_Passive');
 
 
-
     function expect_current_state (state)
         assert (strcmp(stock_strategy.CurrentState(),state));
     end
+
+    function expect_lot (lot)
+        assert (stock_strategy.portfoy.lot == lot);
+    end
+
 end
