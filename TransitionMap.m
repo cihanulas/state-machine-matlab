@@ -11,6 +11,15 @@ classdef TransitionMap < handle
         function key = create_key (from_state, to_state)
             key = [from_state '_' to_state];
         end
+        
+        function run_func(obj, func)
+                try % ismethod(obj, func) can not access
+                    obj.(func)();
+                catch
+                    warning(['run_func::''' func ''' is not defined in main object. So it is skipped'])
+                end
+        end
+        
     end
     methods
         function obj = TransitionMap(transitions)
@@ -33,16 +42,21 @@ classdef TransitionMap < handle
         
         function go_next(obj, main_obj, data)
             current_state = main_obj.CurrentState();
-            next_state = obj.tr_map.(current_state);
+            if isfield(obj.tr_map, current_state)
+                next_state = obj.tr_map.(current_state);
+            else
+                warning(['go_next::no transition is defined from state: ''' current_state '''. No state transition.'])
+                return
+            end
             key = TransitionMap.create_key(current_state, next_state);
             if isfield(obj.exit_map, key)
                 onExit = obj.exit_map.(key);
-                main_obj.(onExit)();
+                obj.run_func (main_obj, onExit);
             end
             
             if isfield(obj.enter_map, key)
                 onEnter = obj.enter_map.(key);
-                main_obj.(onEnter)();
+                obj.run_func (main_obj, onEnter);
             end
             if (nargin==2)
                 data= [];

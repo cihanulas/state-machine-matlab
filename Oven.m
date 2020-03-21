@@ -1,12 +1,6 @@
 classdef Oven < StateMachine
     
     properties (Constant)
-        states = struct (...
-            'ST_DoorOpen', State('ST_DoorOpen'), ...
-            'ST_DoorClose', State('ST_DoorClose'), ...
-            'ST_Ignored', StateMachine.ST_Ignored, ...
-            'ST_CannotHappen', StateMachine.ST_CannotHappen);
-        
         % Turn light on before openning door
         transitions_for_event_open_door = TransitionMap ({
             {'ST_DoorClose' 'ST_DoorOpen', 'TurnOnLight'};
@@ -22,8 +16,9 @@ classdef Oven < StateMachine
     
     methods
         function obj = Oven()
-            obj@StateMachine(Oven.states.ST_DoorClose)
-            disp([ 'Oven is ready in state: ' obj.CurrentState()]);
+            obj@StateMachine('ST_DoorClose')
+            disp('Oven is ready.');
+            obj.PrintActiveState();
         end
         
         % External Events
@@ -40,12 +35,12 @@ classdef Oven < StateMachine
     
     methods (Access = {?TransitionMap})
         function TurnOnLight (obj)
-            fprintf('   ==> TurnOnLight executed \n');
+            fprintf('   ==> TurnOnLight just before opening door\n');
             obj.light = true;
         end
         
         function TurnOffLight (obj)
-            fprintf('   ==> TurnOffLight executed \n');
+             fprintf('   ==> TurnOffLight just after closing door\n');
             obj.light = false;
         end
         
@@ -54,11 +49,11 @@ classdef Oven < StateMachine
         
         %% In states
         function ST_DoorOpen(obj, ~)
-            fprintf('ST_DoorOpen\n');
+            
         end
         
         function ST_DoorClose(obj, ~)
-            fprintf('ST_Stop(0) executed \n');
+            
         end
         
     end

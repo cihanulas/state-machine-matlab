@@ -16,8 +16,8 @@
 classdef StateMachine < handle
     
     properties (Constant)
-        ST_Ignored = State('ST_Ignored')
-        ST_CannotHappen = State('ST_CannotHappen')
+        ST_Ignored = 'ST_Ignored'
+        ST_CannotHappen = 'ST_CannotHappen'
     end
     
     properties
@@ -29,13 +29,25 @@ classdef StateMachine < handle
         EventData = [];
     end
     
+    methods (Static) 
+    
+        function ret = is_ignore(state)
+            ret = strcmp(state, StateMachine.ST_Ignored);
+        end
+        
+        function ret = is_cannot_happen(state)
+            ret = strcmp(state, StateMachine.ST_CannotHappen);
+        end
+        
+    end
+    
     methods
         function obj = StateMachine(init_state)
             obj.currentState = init_state;
         end
         
         function str = CurrentState(obj)
-            str = obj.currentState.name;
+            str = obj.currentState;
         end
         
         function PrintActiveState(obj)
@@ -55,20 +67,24 @@ classdef StateMachine < handle
                 
                 %state = obj.states.(obj.CurrentState());
                 % obj.currentState.in(obj.EventData);
-                obj.(obj.CurrentState())(obj.EventData);
+                current_state =  obj.CurrentState();
+                fprintf('   (.)  State function %s() is executed....\n', current_state);
+                obj.(current_state)(obj.EventData);
+                fprintf('   (.)  State function %s() execution done.\n', current_state);
             end
         end
+        
+        
     end
     
     methods (Access = public)
-        function obj = ExternalEvent(obj, newStateName, eventData)
-            newState = obj.states.(newStateName);
+        function obj = ExternalEvent(obj, newState, eventData)
             
-            if (newState == obj.ST_Ignored )
-                disp('External event ignored: new state is ignored');
-            elseif (newState == obj.ST_CannotHappen)
-                disp('External event ignored: new state cannot happen');
-            elseif (newState ~= obj.ST_Ignored)
+            if StateMachine.is_ignore(newState)
+                disp('  --> This event is ignored (ST_Ignored).');
+            elseif StateMachine.is_cannot_happen(newState)
+                disp('  --> This event is ignored:(ST_CannotHappen)');
+            else
                 % generate the event and execute the state engine
                 obj.InternalEvent(newState, eventData);
                 obj.StateEngine();
@@ -79,11 +95,7 @@ classdef StateMachine < handle
         function obj = InternalEvent(obj, newState, eventData)
             obj.EventData = eventData;
             obj.event_generated = true;
-            % run exit
-            
-            %obj.currentState.exit();
             obj.currentState = newState;
-            %obj.currentState.enter();
         end
         
     end
