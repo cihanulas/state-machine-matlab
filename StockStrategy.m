@@ -42,7 +42,7 @@ classdef StockStrategy < StateMachine
         price
     end
     
-    methods
+    methods (Access = public)
         function obj = StockStrategy(strategy)
             obj@StateMachine('ST_Passive')
             obj.strategy = strategy;
@@ -74,6 +74,7 @@ classdef StockStrategy < StateMachine
         
     end
     
+    % Transition Methods
     methods (Access = {?TransitionMap})
         function LogStrategyInPassiveMode (obj)
             fprintf('   ==> Strategy in passive mode. All events are ignored.\n');
@@ -88,6 +89,8 @@ classdef StockStrategy < StateMachine
         end
         
     end
+    
+    % State Methods
     methods (Access = {?StateMachine})
         
         %% In states
@@ -128,9 +131,5 @@ classdef StockStrategy < StateMachine
         function ST_OrderInProgress(obj, ~)
             
         end
-        
-        
-        
-        
     end
 end
